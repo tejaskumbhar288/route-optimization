@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form">
+            <h2 class="text-uppercase text-center mb-5">Create an account</h2>
+    
+            <form method="POST">
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="form3Example1cg">Your Name</label>
+                    <input type="text" id="form3Example1cg" class="form-control form-control-lg" name="name">
+                </div>
+    
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="form3Example3cg">Your Email</label>
+                    <input type="email" id="form3Example3cg" class="form-control form-control-lg" name="email">
+                    <div class="text-danger" id="email-error"></div>
+                </div>
+
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="form3Example3cg">Your Phone</label>
+                    <input type="text" id="form3Example3cg" class="form-control form-control-lg" name="phone">
+                    <div class="text-danger" id="phone-error"></div>
+                </div>
+    
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="form3Example4cg">Password</label>
+                    <input type="password" id="form3Example4cg" class="form-control form-control-lg" name="password">
+                </div>
+    
+                <div class="form-check d-flex justify-content-center mb-5">
+                    <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3cg">
+                    <label class="form-check-label" for="form2Example3g">
+                        I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
+                    </label>
+                </div>
+    
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Register</button>
+                </div>
+    
+                <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="{{ url_for('login') }}" class="fw-bold text-body"><u>Login here</u></a></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Simple form validation
+        document.querySelector("form").addEventListener("submit", function(event) {
+            let valid = true;
+            let email = document.querySelector("input[name='email']").value;
+            let phone = document.querySelector("input[name='phone']").value;
+            let emailError = document.getElementById("email-error");
+            let phoneError = document.getElementById("phone-error");
+
+            // Email validation (must end with @gmail.com)
+            if (!email.endsWith('@gmail.com')) {
+                emailError.textContent = "Email must be a Gmail address.";
+                valid = false;
+            } else {
+                emailError.textContent = "";
+            }
+
+            // Phone validation (must have 10 digits)
+            if (!/^\d{10}$/.test(phone)) {
+                phoneError.textContent = "Phone number must be exactly 10 digits.";
+                valid = false;
+            } else {
+                phoneError.textContent = "";
+            }
+
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

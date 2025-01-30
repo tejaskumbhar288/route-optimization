@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Route Optimization</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://maps.googleapis.com/maps/api/js?key=###&libraries=geometry&callback=initMap" async defer></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Delivery Route Optimization</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <form id="route-form" class="p-3 border rounded bg-light">
+                    <div class="mb-3">
+                        <label for="start" class="form-label">Start Location:</label>
+                        <input type="text" class="form-control" id="start" name="start" placeholder="Enter start location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end" class="form-label">End Location:</label>
+                        <input type="text" class="form-control" id="end" name="end" placeholder="Enter end location" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Find Optimal Route</button>
+                </form>
+                <div id="route-info" class="mt-4">
+                    <h5>Route Details</h5>
+                    <p><strong>Distance:</strong> <span id="distance"></span></p>
+                    <p><strong>Duration:</strong> <span id="duration"></span></p>
+                    <p><strong>Estimated Cost:</strong> <span id="cost"></span></p>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div id="map" style="width: 100%; height: 500px;" class="border rounded"></div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
