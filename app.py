@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
-from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from dotenv import load_dotenv
-import MySQLdb
 from datetime import datetime
 from functools import wraps
+from flask_pymongo import PyMongo
+from bson.objectid import ObjectId
 
 # Load environment variables
 load_dotenv()
@@ -13,10 +13,7 @@ load_dotenv()
 # Configuration classes
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'your_secret_key')
-    MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
-    MYSQL_USER = os.getenv('MYSQL_USER', 'root')
-    MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
-    MYSQL_DB = os.getenv('MYSQL_DB', 'flask_app')
+    MONGO_URI = os.getenv('MONGO_URI', 'mongodb+srv://username:password@cluster0.mongodb.net/flask_app?retryWrites=true&w=majority')
     GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
     SESSION_PERMANENT = False
     SESSION_COOKIE_SECURE = True
@@ -39,8 +36,8 @@ def login_required(f):
 app = Flask(__name__)
 app.config.from_object(ProductionConfig)
 
-# Initialize MySQL
-mysql = MySQL(app)
+# Initialize MongoDB
+mongo = PyMongo(app)
 
 @app.route('/')
 def home():
@@ -58,17 +55,12 @@ def contact():
 @login_required
 def history():
     try:
-        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-            cursor.execute("""
-                SELECT start_location, end_location, timestamp, distance, duration 
-                FROM routes 
-                WHERE user_id = %s 
-                ORDER BY timestamp DESC 
-                LIMIT 50
-            """, (session['user_id'],))
-            history = cursor.fetchall()
+        # Query routes collection for user's history
+        history = list(mongo.db.routes.find(
+            {'user_id': session['user_id']},
+            {'start_location': 1, 'end_location': 1, 'timestamp': 1, 'distance': 1, 'duration': 1, '_id': 0}
+        ).sort('timestamp', -1).limit(50))
         
-        # Render the history page and pass the fetched data
         return render_template('history.html', history=history)
     
     except Exception as e:
@@ -76,7 +68,6 @@ def history():
         app.logger.error(f"History fetch error: {str(e)}")
         flash("An error occurred while fetching history.", "error")
         return redirect(url_for('routes'))
-
 
 @app.route('/routes')
 @login_required
@@ -87,7 +78,7 @@ def routes():
 @login_required
 def save_route():
     data = request.json
-    start = data.get("start")  # Corrected key names
+    start = data.get("start")
     end = data.get("end")
     distance = data.get("distance")
     duration = data.get("duration")
@@ -105,21 +96,25 @@ def save_route():
         return jsonify({"error": "Missing required data"}), 400
 
     try:
-        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-            cursor.execute("""
-                INSERT INTO routes (user_id, start_location, end_location, distance, duration, timestamp) 
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (user_id, start, end, distance, duration, datetime.now()))
-            mysql.connection.commit()
+        route_data = {
+            'user_id': user_id,
+            'start_location': start,
+            'end_location': end,
+            'distance': distance,
+            'duration': duration,
+            'timestamp': datetime.now()
+        }
         
-        return jsonify({"message": "Route saved successfully!"}), 201
-    except MySQLdb.Error as db_error:
-        app.logger.error(f"Database error: {str(db_error)}")
-        return jsonify({"error": "Database error"}), 500
+        result = mongo.db.routes.insert_one(route_data)
+        
+        if result.inserted_id:
+            return jsonify({"message": "Route saved successfully!"}), 201
+        else:
+            return jsonify({"error": "Failed to save route"}), 500
+            
     except Exception as e:
         app.logger.error(f"Unexpected error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
-
 
 @app.route("/get_traffic_data", methods=["GET"])
 def get_traffic_data():
@@ -130,7 +125,6 @@ def get_traffic_data():
         "travel_time": "30 minutes"
     }
     return jsonify(traffic_data)
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -145,24 +139,33 @@ def signup():
             return redirect(url_for('signup'))
 
         try:
-            with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-                cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
-                if cursor.fetchone():
-                    flash('Email already registered.', 'error')
-                    return redirect(url_for('signup'))
+            # Check if email already exists
+            existing_user = mongo.db.users.find_one({'email': email})
+            if existing_user:
+                flash('Email already registered.', 'error')
+                return redirect(url_for('signup'))
 
-                password_hash = generate_password_hash(password)
-                cursor.execute("""
-                    INSERT INTO users (name, email, phone, password) 
-                    VALUES (%s, %s, %s, %s)
-                """, (name, email, phone, password_hash))
-                mysql.connection.commit()
-
-            flash('Signup successful! Please log in.', 'success')
-            return redirect(url_for('login'))
+            # Create new user document
+            user_data = {
+                'name': name,
+                'email': email,
+                'phone': phone,
+                'password': generate_password_hash(password),
+                'created_at': datetime.now()
+            }
+            
+            result = mongo.db.users.insert_one(user_data)
+            
+            if result.inserted_id:
+                flash('Signup successful! Please log in.', 'success')
+                return redirect(url_for('login'))
+            else:
+                flash('Failed to create account.', 'error')
+                return redirect(url_for('signup'))
+                
         except Exception as e:
-            # app.logger.error(f"Signup error: {str(e)}")
-            # flash('An error occurred during signup.', 'error')
+            app.logger.error(f"Signup error: {str(e)}")
+            flash('An error occurred during signup.', 'error')
             return redirect(url_for('signup'))
 
     return render_template('signup.html')
@@ -180,12 +183,12 @@ def login():
         return redirect(url_for("login"))
 
     try:
-        with mysql.connection.cursor(MySQLdb.cursors.DictCursor) as cursor:
-            cursor.execute("SELECT id, password, name FROM users WHERE email = %s", (email,))
-            user = cursor.fetchone()
+        # Find user by email
+        user = mongo.db.users.find_one({'email': email})
 
         if user and check_password_hash(user["password"], password):
-            session['user_id'] = user["id"]
+            # Convert ObjectId to string for session storage
+            session['user_id'] = str(user["_id"])
             session['user_name'] = user["name"]
             return redirect(url_for('routes'))
 
@@ -201,6 +204,10 @@ def logout():
     session.clear()
     flash("You have been logged out successfully.", "success")
     return redirect(url_for('login'))
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
