@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Route Optimization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="/static/css/styles_login.css"> -->
+    <link rel="stylesheet" href="/static/css/styles_about.css">
+
+</head>
+<body>
+    <nav>
+        <div class="navbar">
+            <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='images/logo1.jpg') }}" alt="Logo" class="logo">
+            </a>
+            <div class="navbar-links">
+                <a href="{{ url_for('home') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="{{ url_for('about') }}" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="{{ url_for('contact') }}" class="nav-link"><i class="fas fa-envelope"></i> Contact Us</a>
+
+            </div>
+            <div class="navbar-buttons">
+                <a href="{{ url_for('signup') }}" class="btn"><i class="fas fa-user-plus"></i> Signup</a>
+                <a href="{{ url_for('login') }}" class="btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="about-container">
+        <h1>About Route Optimization</h1>
+        <p>Welcome to Route Optimization, a cutting-edge platform designed to make travel planning easier and more efficient. Whether you're managing deliveries, planning a trip, or optimizing logistics, our app helps you find the most efficient routes with the least travel time or cost.</p>
+        <h2>How It Works</h2>
+        <p>Our system uses advanced algorithms to calculate the optimal routes for your journeys, taking into account factors such as traffic, road conditions, and distances. All you need to do is input your starting point, destination, and any stops along the way, and our system will do the rest.</p>
+
+        <h2>Why Choose Us?</h2>
+        <ul>
+            <li><strong>Time Savings:</strong> Save time by finding the shortest and fastest routes.</li>
+            <li><strong>Cost Efficiency:</strong> Reduce fuel costs by optimizing your travel routes.</li>
+            <li><strong>Easy to Use:</strong> Our platform is user-friendly and accessible for all types of users.</li>
+            <li><strong>Real-Time Updates:</strong> Get updates on road conditions and alternative routes in real-time.</li>
+        </ul>
+
+        <p>Our goal is to make route optimization accessible to everyone—from individual travelers to large-scale logistics operations. Join us today to start optimizing your routes!</p>
+    </div>
+</body>
+</html>

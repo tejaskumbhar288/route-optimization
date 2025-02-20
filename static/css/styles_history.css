@@ -1,0 +1,51 @@
+/* History Page Styling */
+.history-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.history-title {
+    font-size: 2rem;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.history-table th {
+    background: #007bff;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+.history-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.history-table tr:hover {
+    background: #f1f1f1;
+}
+
+.no-history {
+    color: #888;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}

@@ -5,25 +5,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask App</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- <link rel="stylesheet" href="/static/css/styles_login.css"> -->
+    <link rel="stylesheet" href="/static/css/styles_index.css">
+
 </head>
 <body>
     <nav>
-        <div class="navbar">
-            <span class="website-name">My Website</span>
-            <div class="navbar-links">
-                <a href="{{ url_for('index') }}">Home</a>
-                <a href="{{ url_for('index') }}">About</a>
-                <a href="{{ url_for('index') }}">Contact Us</a>
+        <nav>
+            <div class="navbar">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo1.jpg') }}" alt="Logo" class="logo">
+                </a>
+                <div class="navbar-links">
+                    <a href="{{ url_for('home') }}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                    <a href="{{ url_for('about') }}" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                    <a href="{{ url_for('contact') }}" class="nav-link"><i class="fas fa-envelope"></i> Contact Us</a>
+
+                </div>
+                <div class="navbar-buttons" id="auth-links">
+                    <a href="{{ url_for('signup') }}" class="btn"><i class="fas fa-user-plus"></i> Signup</a>
+                    <a href="{{ url_for('login') }}" class="btn"><i class="fas fa-sign-in-alt"></i> Login</a>
+
+                </div>
+                <div class="navbar-buttons" id="user-icon" style="display:none;">
+                    <div class="user-dropdown">
+                        <i class="fas fa-user-circle" onclick="toggleDropdown()"></i>
+                        <div class="dropdown-content">
+                            <a href="{{ url_for('history') }}">View History</a>
+                            <a href="#" onclick="signOut()">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="navbar-buttons">
-                <a href="{{ url_for('signup') }}" class="btn">Signup</a>
-                <a href="{{ url_for('login') }}" class="btn">Login</a>
-            </div>
-        </div>
-    </nav>
+        </nav>
     <div class="hero">
-        <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Hero Image">
+        <img src="{{ url_for('static', filename='images/hero3.jpg') }}" 
+     alt="Hero Image" 
+     style="width: 100vw; height: auto; display: block;">
         <a href="{{ url_for('signup') }}" class="get-started-btn">Get Started</a>
     </div>
+    <section class="intro">
+        <div class="content">
+            <h1>Optimize Your Delivery Routes with Ease</h1>
+            <p>Welcome to our Route Optimization platform, where we use advanced algorithms to ensure your delivery process is as efficient as possible. Say goodbye to delays and high costs with our smart solutions.</p>
+            <div class="benefits">
+                <div class="benefit-item">
+                    <h3>Smart Routing</h3>
+                    <p>Find the fastest and most efficient routes for your deliveries, minimizing fuel consumption and time spent on the road.</p>
+                </div>
+                <div class="benefit-item">
+                    <h3>Real-Time Traffic Data</h3>
+                    <p>Stay updated with real-time traffic data to adjust routes on the fly, avoiding jams and delays.</p>
+                </div>
+                <div class="benefit-item">
+                    <h3>Cost Efficiency</h3>
+                    <p>Save money on fuel and driver hours with optimized routes designed for maximum cost savings.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
+
+<script>
+    // Check if the user is logged in by looking for the authToken in localStorage
+function checkLoginStatus() {
+    const authToken = localStorage.getItem("authToken"); // Check if JWT exists in localStorage
+    
+    if (authToken) {
+        document.getElementById('user-icon').style.display = 'block';
+        document.getElementById('auth-links').style.display = 'none';
+        loadUserHistory();
+    } else {
+        document.getElementById('user-icon').style.display = 'none';
+        document.getElementById('auth-links').style.display = 'block';
+    }
+}
+
+// Toggle dropdown visibility
+function toggleDropdown() {
+    const dropdown = document.getElementById('dropdown-content');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Sign out the user
+function signOut() {
+    localStorage.removeItem("authToken"); // Remove the token from local storage
+    window.location.reload();  // Reload page to reflect the signout
+}
+
+// Load user history from the backend
+function loadUserHistory() {
+    fetch('/get_history')
+        .then(response => response.json())
+        .then(data => {
+            if (data.history) {
+                const historyList = document.getElementById('history-list');
+                data.history.forEach(record => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `From: ${record.start_location}, To: ${record.end_location} (Visited on: ${record.time})`;
+                    historyList.appendChild(listItem);
+                });
+            }
+        });
+}
+
+// Call the checkLoginStatus on page load
+window.onload = checkLoginStatus;
+
+<div id="user-icon" style="display:none;">
+    <button onclick="loadUserHistory()">User Icon</button>
+    <ul id="history-list">
+        <!-- User history will be listed here -->
+    </ul>
+    <button onclick="signOut()">Sign Out</button>
+</div>
+</script>
+
+
+
+
 </html>
+
+

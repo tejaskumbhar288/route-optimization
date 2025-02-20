@@ -1,0 +1,209 @@
+/* Global Styles */
+:root {
+    --primary-color: #4285f4;
+    --primary-dark: #3367d6;
+    --secondary-color: #34a853;
+    --text-color: #333;
+    --light-gray: #f5f7fa;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-gray);
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Navbar Styling */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    padding: 0.8rem 5%;
+    box-shadow: var(--box-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .logo {
+    height: 45px;
+    border-radius: 4px;
+    transition: var(--transition);
+  }
+  
+  .logo:hover {
+    transform: scale(1.05);
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav-link {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: var(--transition);
+  }
+  
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--primary-color);
+    transition: var(--transition);
+  }
+  
+  .nav-link:hover {
+    color: var(--primary-color);
+  }
+  
+  .nav-link:hover::after {
+    width: 100%;
+  }
+  
+  .navbar-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+  
+  .navbar-buttons .btn:first-child {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .navbar-buttons .btn:first-child:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+  }
+  
+  .navbar-buttons .btn:last-child {
+    background-color: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+  }
+  
+  .navbar-buttons .btn:last-child:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  /* About Container Styling */
+  .about-container {
+    max-width: 1000px;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+  }
+  
+  .about-container h1 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 2.2rem;
+    position: relative;
+    padding-bottom: 0.7rem;
+  }
+  
+  .about-container h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background-color: var(--secondary-color);
+  }
+  
+  .about-container h2 {
+    color: var(--primary-dark);
+    margin-top: 2rem;
+    font-size: 1.6rem;
+  }
+  
+  .about-container p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+  }
+  
+  .about-container ul {
+    padding-left: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .about-container li {
+    margin-bottom: 0.8rem;
+    position: relative;
+    padding-left: 0.5rem;
+  }
+  
+  .about-container li strong {
+    color: var(--secondary-color);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      padding: 1rem;
+    }
+    
+    .navbar-links {
+      margin: 1rem 0;
+      width: 100%;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .navbar-buttons {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .about-container {
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+    
+    .about-container h1 {
+      font-size: 1.8rem;
+    }
+  }
+  
+  /* Animation for elements */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .about-container > * {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  
+  .about-container > *:nth-child(2) { animation-delay: 0.1s; }
+  .about-container > *:nth-child(3) { animation-delay: 0.2s; }
+  .about-container > *:nth-child(4) { animation-delay: 0.3s; }
+  .about-container > *:nth-child(5) { animation-delay: 0.4s; }
+  .about-container > *:nth-child(6) { animation-delay: 0.5s; }

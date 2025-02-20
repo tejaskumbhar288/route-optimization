@@ -14,6 +14,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
 .brand {
@@ -27,7 +32,7 @@ body {
     gap: 1rem;
     justify-content: center;
     flex-grow: 1;
-    color:#000;
+    color: #000;
 }
 
 .nav-links a {
@@ -36,7 +41,7 @@ body {
 }
 
 .nav-links a:hover {
-    color: #000000;
+    color: #000;
 }
 
 .nav-buttons {
@@ -73,6 +78,7 @@ body {
 .hero {
     position: relative;
     text-align: center;
+    margin-top: 80px; /* Added margin to avoid navbar overlap */
 }
 
 .hero-image {
@@ -105,10 +111,10 @@ body {
 /* Login and Signup Form Container */
 .form-container {
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: flex-start; /* Align to the upper side */
-    height: 100vh; /* Full viewport height */
-    padding-top: 10vh; /* Adjust this value to move it further up or down */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0 15px;
 }
 
 .form {
@@ -117,7 +123,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 500px; /* Increases max-width to give more space */
+    max-width: 500px;
     text-align: center;
 }
 
@@ -156,7 +162,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-
+/* Login Form Styling */
 .form-login {
     background-color: #fff;
     padding: 2rem;
@@ -173,13 +179,13 @@ button:hover {
     font-weight: bold;
 }
 
-/* Style for the Contact Page */
+/* Contact Page Styles */
 .contact-container {
     display: flex;
-    justify-content: center;  /* Horizontally center the form */
-    align-items: center;      /* Vertically center the form */
-    min-height: 100vh;         /* Ensure the container takes up full height of the viewport */
-    padding: 20px;             /* Padding to ensure there is some space from the edges */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
 .contact-form {
@@ -187,8 +193,8 @@ button:hover {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 600px;          /* Limit the form width */
-    width: 100%;               /* Ensure form takes full width within its container */
+    max-width: 600px;
+    width: 100%;
 }
 
 .contact-form h2 {
@@ -227,17 +233,16 @@ button:hover {
     background-color: #45a049;
 }
 
-
-/* Style for the Modal */
+/* Modal Styles */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
+    display: none;
+    position: fixed;
+    z-index: 1;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
     padding-top: 60px;
 }
 
@@ -274,75 +279,6 @@ button:hover {
     font-size: 16px;
     color: #333;
 }
-
-/* Logo Styling */
-.logo {
-    height: 50px; /* Adjust the size of the logo */
-    width: auto;  /* Maintain aspect ratio */
-    margin-right: 20px;  /* Add some space to the right of the logo */
-    vertical-align: middle; /* Center the logo vertically in the navbar */
-}
-
-/* Optional: Navbar styling */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #333; /* Navbar background */
-}
-
-.navbar-links a, .navbar-buttons a {
-    color: rgb(3, 3, 3);
-    text-decoration: none;
-    padding: 5px;
-    margin: 0 10px;
-    font-size: 16px;
-}
-
-.navbar-links a:hover, .navbar-buttons a:hover {
-    background-color: #d9d4e4;
-    border-radius: 4px;
-}
-
-
-/* General Navbar Styling */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #ffffff;
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(78, 198, 211, 0.1);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-}
-
-.flash-messages {
-    background: #f8d7da;
-    color: #721c24;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.map-container {
-    width: 100%;
-    height: 500px;
-}
-
-.loading-overlay {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: white;
-    z-index: 9999;
-}
-
 
 /* Logo Styling */
 .logo {
@@ -389,12 +325,6 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Form Container Adjustments */
-.form-container {
-    margin-top: 80px; /* To avoid overlap with fixed navbar */
-    padding: 20px;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .navbar {
@@ -415,8 +345,11 @@ button:hover {
         text-align: center;
         margin: 5px 0;
     }
-}
 
+    #map {
+        height: 300px;
+    }
+}
 
 .user-dropdown {
     position: relative;
@@ -446,153 +379,3 @@ button:hover {
 .user-dropdown:hover #dropdown-content {
     display: block;
 }
-
-
-/* Global styles */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding-top: 60px; /* Adjust based on the navbar height */
-}
-
-h2 {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 30px;
-}
-
-#loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    display: none;
-    opacity: 0.8;
-    background: rgba(255, 255, 255, 0.9);
-}
-
-#loading-overlay .spinner-border {
-    color: #007bff;
-}
-
-.navbar {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 9999;
-}
-
-.navbar-brand img {
-    max-width: 100%;
-    height: auto;
-}
-
-.navbar-nav .nav-link {
-    color: #007bff;
-    font-size: 1.1rem;
-}
-
-.navbar-nav .nav-link.active {
-    font-weight: 600;
-    color: #0056b3;
-}
-
-.navbar-toggler-icon {
-    background-color: #007bff;
-}
-
-.container {
-    max-width: 1200px;
-}
-
-.form-label {
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-#routeForm input,
-#routeForm button {
-    border-radius: 8px;
-}
-
-#routeForm button {
-    background-color: #007bff;
-    color: white;
-    font-weight: 600;
-}
-
-#routeForm button:hover {
-    background-color: #0056b3;
-}
-
-#save-route {
-    background-color: #28a745;
-}
-
-#save-route:hover {
-    background-color: #218838;
-}
-
-#showTrafficButton {
-    background-color: #ffc107;
-    color: white;
-    border: none;
-    font-weight: 600;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 10px;
-    width: 100%;
-}
-
-#showTrafficButton:hover {
-    background-color: #e0a800;
-}
-
-#map {
-    border-radius: 8px;
-    height: 100%;
-}
-
-.mt-3 {
-    margin-top: 20px;
-}
-
-#trafficInfo {
-    background-color: #f1f1f1;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 20px;
-}
-
-#trafficInfo p {
-    margin: 5px 0;
-    font-size: 1rem;
-}
-
-/* Responsive design for smaller screens */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-    }
-
-    .col-md-6 {
-        margin-bottom: 20px;
-    }
-
-    #map {
-        height: 300px;
-    }
-}
-
-/* Card-like design for form */
-#routeForm {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-#routeForm .mb-3 {
-    margin-bottom: 1.5rem;
-}
-

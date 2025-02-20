@@ -1,44 +1,473 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Delivery Route Optimization - Find the most efficient delivery routes">
+    <meta name="theme-color" content="#007bff">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles1.css') }}">
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --transition: all 0.3s ease;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            padding: 1rem 0;
+            transition: var(--transition);
+        }
+
+        .navbar-brand img.logo {
+            transition: var(--transition);
+        }
+
+        .navbar-brand:hover img.logo {
+            transform: scale(1.05);
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Form Elements */
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark-gray);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success {
+            margin-top: 1rem;
+            background-color: var(--success-color);
+            border: none;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Layout adjustments for columns */
+        .route-form-column {
+            width: 40%;
+            padding-right: 20px;
+        }
+
+        .map-column {
+            width: 60%;
+        }
+
+        /* Map Container */
+        #map {
+            height: 550px !important;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+        }
+
+        /* Route Information */
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+
+        .route-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+
+        .route-info-item i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        /* Route info container styling */
+        .route-info-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* User Dropdown */
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow-lg);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--light-gray);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .route-form-column, .map-column {
+                width: 100%;
+            }
+            
+            .navbar {
+                padding: 0.5rem 0;
+            }
+            
+            #map {
+                height: 400px !important;
+                margin-top: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.2rem;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
     <title>Delivery Route Optimization</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="https://maps.googleapis.com/maps/api/js?key=###&libraries=geometry&callback=initMap" async defer></script>
 </head>
 
-<body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Delivery Route Optimization</h1>
+<body class="bg-light">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="position-fixed top-0 start-0 w-100 h-100 bg-white d-none" style="opacity: 0.8; z-index: 9999;">
+        <div class="position-absolute top-50 start-50 translate-middle text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Processing your request...</p>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='images/logo1.jpg') }}" 
+                     alt="Route Optimizer Logo" 
+                     class="logo" 
+                     width="150" 
+                     height="40"
+                     loading="lazy">
+            </a>
+            
+            <button class="navbar-toggler" 
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#navbarContent" 
+                    aria-controls="navbarContent" 
+                    aria-expanded="false" 
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'home' }}" 
+                           href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'about' }}" 
+                           href="{{ url_for('about') }}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'contact' }}" 
+                           href="{{ url_for('contact') }}">Contact</a>
+                    </li>
+                </ul>
+                
+                {% if session.get('user_id') %}
+                <div class="dropdown">
+                    <button class="btn btn-link dropdown-toggle d-flex align-items-center" 
+                            type="button" 
+                            id="userDropdown" 
+                            data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle fa-2x"></i>
+                        <span class="ms-2">{{ session.get('user_name', 'User') }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow">
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('history') }}">
+                                <i class="fas fa-history me-2"></i>History
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% else %}
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary">Login</a>
+                    <a href="{{ url_for('signup') }}" class="btn btn-primary">Sign Up</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Route Optimization Map Section -->
+    <div class="container my-4">
+        <h2 class="text-center mb-4">Find the Best Delivery Route</h2>
         <div class="row">
-            <div class="col-md-4">
-                <form id="route-form" class="p-3 border rounded bg-light">
+            <div class="col-lg-5 route-form-column">
+                <form id="routeForm" class="mb-4">
                     <div class="mb-3">
-                        <label for="start" class="form-label">Start Location:</label>
-                        <input type="text" class="form-control" id="start" name="start" placeholder="Enter start location" required>
+                        <label for="start-location" class="form-label">Start Location</label>
+                        <input type="text" id="start-location" class="form-control" placeholder="Enter starting point">
                     </div>
                     <div class="mb-3">
-                        <label for="end" class="form-label">End Location:</label>
-                        <input type="text" class="form-control" id="end" name="end" placeholder="Enter end location" required>
+                        <label for="end-location" class="form-label">End Location</label>
+                        <input type="text" id="end-location" class="form-control" placeholder="Enter destination">
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Find Optimal Route</button>
+                    <button type="submit" class="btn btn-primary w-100">Get Route</button>
+                    <button id="saveRouteButton" class="btn btn-success w-100 mt-3">Save Route</button>
                 </form>
-                <div id="route-info" class="mt-4">
-                    <h5>Route Details</h5>
-                    <p><strong>Distance:</strong> <span id="distance"></span></p>
-                    <p><strong>Duration:</strong> <span id="duration"></span></p>
-                    <p><strong>Estimated Cost:</strong> <span id="cost"></span></p>
+                
+                <!-- Route Information moved below Save button -->
+                <div class="route-info-container">
+                    <h5 class="mb-3">Route Details</h5>
+                    <div class="route-info">
+                        <p class="route-info-item"><i class="fas fa-road"></i> <strong>Distance:</strong> <span id="distance">-</span></p>
+                        <p class="route-info-item"><i class="fas fa-clock"></i> <strong>Est. Time:</strong> <span id="duration">-</span></p>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div id="map" style="width: 100%; height: 500px;" class="border rounded"></div>
+            <div class="col-lg-7 map-column">
+                <div id="map"></div>
+                <button id="toggle-traffic" class="btn btn-outline-secondary mt-2">
+                    <i class="fas fa-car"></i> Show Traffic
+                </button>
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
 
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+
+    <!-- Google Maps API (Use valid API key) -->
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initMap">
+</script>
+
+
+    <!-- Custom JavaScript -->
+    <script>
+        let map, directionsService, directionsRenderer, trafficLayer = null;
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM fully loaded");
+            
+            if (typeof google === "undefined" || !google.maps) {
+                console.error("Google Maps API failed to load.");
+                document.getElementById("map").innerHTML = "<p>Sorry, we couldn't load the map.</p>";
+                return;
+            }
+        
+            initMap();
+            setupEventListeners();
+        });
+        
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 28.6139, lng: 77.2090 },
+                zoom: 12
+            });
+        
+            const inputStart = document.getElementById("start-location");
+            const inputEnd = document.getElementById("end-location");
+        
+            if (inputStart && inputEnd) {
+                new google.maps.places.Autocomplete(inputStart);
+                new google.maps.places.Autocomplete(inputEnd);
+            }
+        
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+        }
+        
+        function getRoute() {
+            const start = document.getElementById("start-location").value;
+            const end = document.getElementById("end-location").value;
+        
+            if (!start || !end) {
+                alert("Please enter both start and end locations.");
+                return;
+            }
+        
+            directionsService.route({
+                origin: start,
+                destination: end,
+                travelMode: google.maps.TravelMode.DRIVING,
+            }, function(result, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                    const route = result.routes[0].legs[0];
+                    document.getElementById("distance").textContent = route.distance.text;
+                    document.getElementById("duration").textContent = route.duration.text;
+                } else {
+                    alert("Could not find a valid route.");
+                }
+            });
+        }
+        
+        function saveRoute() {
+            const start = document.getElementById("start-location").value;
+            const end = document.getElementById("end-location").value;
+            const distance = document.getElementById("distance").textContent;
+            const duration = document.getElementById("duration").textContent;
+        
+            if (!start || !end || distance === '-' || duration === '-') {
+                alert("Please find a valid route first.");
+                return;
+            }
+        
+            fetch("/save_route", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ start, end, distance, duration }),
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("Error saving route:", error));
+        }
+        
+        function toggleTrafficLayer(button) {
+            if (!trafficLayer) {
+                trafficLayer = new google.maps.TrafficLayer();
+                trafficLayer.setMap(map);
+                button.textContent = "Hide Traffic";
+            } else {
+                trafficLayer.setMap(null);
+                trafficLayer = null;
+                button.textContent = "Show Traffic";
+            }
+        }
+        
+        function setupEventListeners() {
+            document.getElementById("routeForm")?.addEventListener("submit", function (e) {
+                e.preventDefault();
+                getRoute();
+            });
+            document.getElementById("saveRouteButton")?.addEventListener("click", saveRoute);
+            document.getElementById("toggle-traffic")?.addEventListener("click", function () {
+                toggleTrafficLayer(this);
+            });
+        }
+    </script>
+</body>
 </html>
